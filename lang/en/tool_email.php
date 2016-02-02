@@ -23,4 +23,5 @@
  */
 
 $string['pluginname'] = 'Email tools';
+$string['messageprovider:email'] = 'Test email message';
 
