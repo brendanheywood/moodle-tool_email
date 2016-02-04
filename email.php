@@ -54,6 +54,7 @@ if ($options['help'] || empty($options['subject'])) {
 
 Options:
 -h, --help     Print out this help
+-d, --dryrun   Dry run with echo instead of sending email
 -t, --to       To   email address (defaults to {$options['to']})
 -f, --from     From email address (defaults to {$options['from']})
 -s, --subject  Subject is required
@@ -78,12 +79,26 @@ $to = (object)array(
     'emailstop' => 0,
     'suspended' => 0,
     'maildisplay' => true,
+    'mailformat' => 1,
 );
 $from = $to;
 $from->email = $options['from'];
 
 $subject = $options['subject'];
-$body = 'Test email';
+$preopt = print_r($options, 1);
+$html = "
+<h2>Subject: {$options['subject']}</h2>
+<p>A test email</p>
+<ul>
+<li>Some items</li>
+<li>Some items</li>
+<li>Some items</li>
+</ul>
+<pre>
+$preopt
+</pre>
+";
+$text = html_to_text($html);
 
 if ($options['dryrun']) {
     echo "Dry run: email from {$options['from']} to {$options['to']}\n";
@@ -92,7 +107,7 @@ if ($options['dryrun']) {
     switch ($options['method']) {
 
         case 'email':
-            email_to_user($to, $from, $subject, $body);
+            email_to_user($to, $from, $subject, $text, $html);
             print "email_to_user(from: {$options['from']}, to:{$options['to']}, subject, body);\n";
             break;
 
@@ -104,10 +119,10 @@ if ($options['dryrun']) {
             $eventdata->userfrom            = $from;
             $eventdata->userto              = $to;
             $eventdata->subject             = $subject;
-            $eventdata->fullmessage         = $body;
-            $eventdata->fullmessageformat   = FORMAT_PLAIN;
-            $eventdata->fullmessagehtml     = $body;
-            $eventdata->smallmessage        = $body;
+            $eventdata->fullmessage         = $text;
+            $eventdata->fullmessageformat   = FORMAT_HTML;
+            $eventdata->fullmessagehtml     = $html;
+            $eventdata->smallmessage        = $text;
             $eventdata->notification        = 1;
 
             if (message_send($eventdata)) {
