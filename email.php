@@ -73,24 +73,34 @@ $to = (object)array(
     'id' => 1,
     'auth' => 'manual',
     'email' => $options['to'],
-    'firstname' => null,
-    'lastname' => null,
+    'username' => 'brendan',
+    'firstname' => 'Bob',
+    'lastname' => 'Smith',
     'deleted' => 0,
     'emailstop' => 0,
     'suspended' => 0,
     'maildisplay' => true,
-    'mailformat' => 1,
+    'mailformat' => 1, // 1 = html, 0 = text only
 );
+$allnames = get_all_user_name_fields();
+foreach ($allnames as $name) {
+    if (!property_exists($to, $name)) {
+        $to->$name = '';
+    }
+}
+
 $from = $to;
 $from->email = $options['from'];
 
 $subject = $options['subject'];
 $preopt = print_r($options, 1);
+$url = new moodle_url('/mod/forum/view.php?id=3');
 $html = "
 <h2>Subject: {$options['subject']}</h2>
 <p>A test email</p>
+<a href='$url'>Somewhere</a>
+<a href='$url'>$url</a>
 <ul>
-<li>Some items</li>
 <li>Some items</li>
 <li>Some items</li>
 </ul>
