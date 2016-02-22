@@ -89,7 +89,7 @@ foreach ($allnames as $name) {
     }
 }
 
-$from = $to;
+$from = clone $to;
 $from->email = $options['from'];
 
 $subject = $options['subject'];
