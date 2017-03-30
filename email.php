@@ -34,6 +34,8 @@ list($options, $unrecognized) = cli_get_params(array(
     'method' => 'email',
     'subject' => '',
     'to' => 'ping@tools.mxtoolbox.com',
+    'number' => 1,
+    'verbose' => false,
 ), array(
     'd' => 'dryrun',
     'f' => 'from',
@@ -41,6 +43,8 @@ list($options, $unrecognized) = cli_get_params(array(
     'm' => 'method',
     's' => 'subject',
     't' => 'to',
+    'n' => 'number',
+    'v' => 'verbose',
 ));
 
 if ($unrecognized) {
@@ -59,7 +63,8 @@ Options:
 -f, --from     From email address (defaults to {$options['from']})
 -s, --subject  Subject is required
 -m, --method   'email' (default) or 'message' which uses the Message API
-
+-n, --number   The number of times to send this message
+-v, --verbose  Verbose outupt
 Example:
 \$php email.php -s='Test subject'
 \$php email.php -s=Test -t=to@example.com -f=from@moodle.com
@@ -114,36 +119,47 @@ if ($options['dryrun']) {
     echo "Dry run: email from {$options['from']} to {$options['to']}\n";
 } else {
 
-    switch ($options['method']) {
+    for ($i = 0; $i < $options['number']; $i++) {
 
-        case 'email':
-            email_to_user($to, $from, $subject, $text, $html);
-            print "email_to_user(from: {$options['from']}, to:{$options['to']}, subject, body);\n";
-            break;
+        switch ($options['method']) {
 
-        case 'message':
+            case 'email':
+                email_to_user($to, $from, $subject, $text, $html);
 
-            $eventdata = new \stdClass();
-            $eventdata->component           = 'tool_email';
-            $eventdata->name                = 'email';
-            $eventdata->userfrom            = $from;
-            $eventdata->userto              = $to;
-            $eventdata->subject             = $subject;
-            $eventdata->fullmessage         = $text;
-            $eventdata->fullmessageformat   = FORMAT_HTML;
-            $eventdata->fullmessagehtml     = $html;
-            $eventdata->smallmessage        = $text;
-            $eventdata->notification        = 1;
+                if ($options['verbose']) {
+                    print "email_to_user(from: {$options['from']}, to:{$options['to']}, subject, body);\n";
+                }
+                break;
 
-            if (message_send($eventdata)) {
-                print "---> Success notification sent to {$to->email}.";
-            } else {
-                print "---> Unable to send notification.";
-            }
-            break;
+            case 'message':
 
-        default:
-            print "Unkown method {$options['method']}\n";
+                $eventdata = new \stdClass();
+                $eventdata->component           = 'tool_email';
+                $eventdata->name                = 'email';
+                $eventdata->userfrom            = $from;
+                $eventdata->userto              = $to;
+                $eventdata->subject             = $subject;
+                $eventdata->fullmessage         = $text;
+                $eventdata->fullmessageformat   = FORMAT_HTML;
+                $eventdata->fullmessagehtml     = $html;
+                $eventdata->smallmessage        = $text;
+                $eventdata->notification        = 1;
+
+                if (message_send($eventdata)) {
+                    if ($options['verbose']) {
+                        print "---> Success notification sent to {$to->email}.";
+                    }
+                } else {
+                    if ($options['verbose']) {
+                        print "---> Unable to send notification.";
+                    }
+                }
+                break;
+
+            default:
+                print "Unkown method {$options['method']}\n";
+        }
+
     }
 
 }
