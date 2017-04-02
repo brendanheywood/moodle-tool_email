@@ -109,11 +109,6 @@ function debug_post_id($postid, $userid, $start, $days, $force) {
             // We want to check this $postid only.
             if ($pid == $postid) {
                 $found = true;
-                if (empty($CFG->forum_enabletimedposts)) {
-                    mtrace('Postid ' . $postid . ' would be marked as FORUM_MAILED_PENDING (0)');
-                } else {
-                    mtrace('Postid ' . $postid . ' would be marked as FORUM_MAILED_SUCCESS (1)');
-                }
                 examine_post($post, $userid);
             }
         }
