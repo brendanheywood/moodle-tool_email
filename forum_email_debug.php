@@ -80,9 +80,9 @@ $start = $options['start'];
 $days = $options['days'];
 $force = $options['force'];
 
-debug_post_id($pid, $uid, $start, $days, $force);
+tool_email_debug_post_id($pid, $uid, $start, $days, $force);
 
-function debug_post_id($postid, $userid, $start, $days, $force) {
+function tool_email_debug_post_id($postid, $userid, $start, $days, $force) {
     global $CFG;
 
     $timenow   = time();
@@ -96,7 +96,7 @@ function debug_post_id($postid, $userid, $start, $days, $force) {
 
     if ($force) {
         $endtime += $CFG->maxeditingtime;
-        $posts = get_all_posts($starttime, $endtime, $timenow);
+        $posts = tool_email_get_all_posts($starttime, $endtime, $timenow);
     } else {
         $posts = forum_get_unmailed_posts($starttime, $endtime, $timenow);
     }
@@ -109,7 +109,7 @@ function debug_post_id($postid, $userid, $start, $days, $force) {
             // We want to check this $postid only.
             if ($pid == $postid) {
                 $found = true;
-                examine_post($post, $userid);
+                tool_email_examine_post($post, $userid);
             }
         }
     } else {
@@ -131,7 +131,7 @@ function debug_post_id($postid, $userid, $start, $days, $force) {
  * @param int $now used for timed discussions only
  * @return array
  */
-function get_all_posts($starttime, $endtime, $now=null) {
+function tool_email_get_all_posts($starttime, $endtime, $now=null) {
     global $CFG, $DB;
 
     $params = array();
@@ -162,7 +162,7 @@ function get_all_posts($starttime, $endtime, $now=null) {
                                  ORDER BY p.modified ASC", $params);
 }
 
-function examine_post($post, $userid = null) {
+function tool_email_examine_post($post, $userid = null) {
     global $DB;
 
     // Get the list of forum subscriptions for per-user per-forum maildigest settings.
@@ -359,7 +359,7 @@ function examine_post($post, $userid = null) {
 
         // Fill caches.
         if (!isset($userto->accessdata)) {
-            $userto->accessdata = get_user_forumcron_access($userto->id);
+            $userto->accessdata = tool_email_get_user_forumcron_access_debug($userto->id);
         }
 
         if (!isset($userto->viewfullnames[$forum->id])) {
@@ -448,7 +448,7 @@ function examine_post($post, $userid = null) {
  * It is the same as get_user_access_sitewide but
  * only for the capabilities the forum_cron uses
  */
-function get_user_forumcron_access($userid) {
+function tool_email_get_user_forumcron_access_debug($userid) {
     global $CFG, $DB, $ACCESSLIB_PRIVATE, $USER;
 
     unset($USER->access);
