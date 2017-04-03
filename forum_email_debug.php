@@ -394,7 +394,7 @@ function tool_email_examine_post($post, $userid = null) {
 
             if (!groups_is_member($discussion->groupid) and !has_capability('moodle/site:accessallgroups', $modcontext)) {
                 // Do not send posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS.
-                mtrace('User ' . $userto->id . ' ' . $userto->email . '. Do not send posts from other gorups when in SEPARATEGROUPS or VISIBLEGROUPS.');
+                mtrace('User ' . $userto->id . ' ' . $userto->email . '. Do not send posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS.');
                 continue;
             }
         }
@@ -417,7 +417,7 @@ function tool_email_examine_post($post, $userid = null) {
             $queue->discussionid = $discussion->id;
             $queue->postid       = $post->id;
             $queue->timemodified = $post->created;
-            mtrace('User ' . $userto->id .' can not see ' . $post->id . '. Email queued, user wants emails as digest.');
+            mtrace('User ' . $userto->id .' in post ' . $post->id . '. User wants emails as digest.');
             continue;
         }
 
